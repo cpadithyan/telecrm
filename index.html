@@ -32,7 +32,7 @@
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
-        .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+        .animate-shake { animation: shake 0.2s ease-in-out; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -112,7 +112,7 @@
     </nav>
 
     <main class="container mx-auto p-4 lg:p-6">
-        <!-- Dashboard Stats -->
+        <!-- Stats -->
         <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
             <div class="glass-card p-3 rounded-xl border-l-4 border-slate-400">
                 <p class="text-slate-400 text-[9px] font-bold uppercase">Total</p>
@@ -148,6 +148,7 @@
             </div>
         </div>
 
+        <!-- Filters -->
         <div class="glass-card p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center">
             <div class="relative flex-1 w-full">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -175,6 +176,7 @@
             </div>
         </div>
 
+        <!-- Lead Table -->
         <div class="glass-card rounded-xl shadow-sm overflow-hidden border border-slate-200">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -199,51 +201,21 @@
                     <i class="fas fa-inbox text-2xl text-slate-300"></i>
                 </div>
                 <p class="text-slate-800 font-bold">No results found</p>
-                <p class="text-slate-500 text-xs">Check your filters or upload new leads.</p>
             </div>
         </div>
     </main>
 
-    <!-- Admin Panel Modal -->
+    <!-- Modals -->
     <div id="adminPanelModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center z-[70] p-4 backdrop-blur-md">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-8 animate-slide">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-800">Security Management</h3>
                 <button onclick="window.closeAdminSettings()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
             </div>
-            <p class="text-slate-500 text-sm mb-6">Reset or change team member PINs</p>
             <div class="space-y-4" id="pinManagementList"></div>
         </div>
     </div>
 
-    <!-- Import Modal -->
-    <div id="importModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 animate-slide">
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Import Data</h3>
-            <div class="space-y-5">
-                <div class="p-4 border-2 border-dashed border-indigo-100 rounded-xl bg-indigo-50/30">
-                    <label class="block text-[10px] font-bold text-indigo-600 uppercase mb-2">1. Select CSV</label>
-                    <input type="file" id="fileInput" accept=".csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2">2. Assign Team Member</label>
-                    <select id="importAssignee" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 outline-none bg-white text-sm">
-                        <option value="Unassigned">Leave Unassigned</option>
-                        <option value="Agent 1">Agent 1</option>
-                        <option value="Agent 2">Agent 2</option>
-                        <option value="Agent 3">Agent 3</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                </div>
-                <div class="flex space-x-3 pt-2">
-                    <button onclick="window.closeImportModal()" class="flex-1 px-4 py-3 text-slate-600 text-sm font-bold">Cancel</button>
-                    <button onclick="window.processUpload()" class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg text-sm">Upload Leads</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lead Modal -->
     <div id="leadModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 animate-slide">
             <div class="flex justify-between items-center mb-6">
@@ -286,7 +258,7 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Call Notes</label>
-                    <textarea id="leadNotes" rows="3" placeholder="Enter conversation remarks..." class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm"></textarea>
+                    <textarea id="leadNotes" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 outline-none resize-none text-sm"></textarea>
                 </div>
                 <div class="flex space-x-3 pt-4">
                     <button type="button" onclick="window.closeModal()" class="flex-1 px-4 py-3 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition">Discard</button>
@@ -307,10 +279,9 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // mandatory rule: apiKey must be empty string
-        const apiKey = ""; 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: apiKey,
+        // CONFIG - Using manual config object with standard env logic
+        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "", // Handled by environment injection
             authDomain: "telecrm-c0cd8.firebaseapp.com",
             projectId: "telecrm-c0cd8",
             storageBucket: "telecrm-c0cd8.firebasestorage.app",
@@ -319,16 +290,16 @@
             measurementId: "G-5R78XQ46DZ"
         };
         
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'telecrm-c0cd8-v2';
+
+        // STATE
         let leads = [];
         let currentAgent = "";
         let enteredPin = "";
-        let agentPins = {};
+        let agentPins = { "Admin": "0000", "Agent 1": "1111", "Agent 2": "2222", "Agent 3": "3333" };
         let isAuthReady = false;
 
         // --- AUTH INITIALIZATION ---
@@ -337,7 +308,6 @@
                 isAuthReady = true;
                 return auth.currentUser;
             }
-
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
@@ -350,28 +320,19 @@
             }
         };
 
-        // UI Helpers
-        const showPinScreen = (agent) => {
+        // UI HELPERS (Global)
+        window.selectUser = async (agent) => {
+            // STEP 1: IMMEDIATELY TRANSITION UI
+            currentAgent = agent;
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-pin').classList.remove('hidden');
             document.getElementById('pinUserTitle').innerText = agent;
             enteredPin = "";
             updatePinDots();
-        };
-
-        // Define global functions
-        window.selectUser = async (agent) => {
-            currentAgent = agent;
-            // Switch UI immediately so the user sees something happening
-            showPinScreen(agent);
             
-            // Perform heavy lifting in background
-            try {
-                await initAuthentication();
-                await fetchAgentPins();
-            } catch (err) {
-                console.error("Selection init failed:", err);
-            }
+            // STEP 2: BACKGROUND CONNECTION
+            await initAuthentication();
+            await fetchAgentPins();
         };
 
         window.backToSelection = () => {
@@ -379,52 +340,7 @@
             document.getElementById('step-selection').classList.remove('hidden');
         };
 
-        async function fetchAgentPins() {
-            if (!isAuthReady) return;
-            try {
-                const pinRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_security', 'pins');
-                const pinDoc = await getDoc(pinRef);
-                if (pinDoc.exists()) {
-                    agentPins = pinDoc.data();
-                } else {
-                    agentPins = { "Admin": "0000", "Agent 1": "1111", "Agent 2": "2222", "Agent 3": "3333" };
-                    await setDoc(pinRef, agentPins);
-                }
-            } catch (e) {
-                console.error("PIN Fetch Error:", e);
-                // Hard-coded defaults if database is unreachable
-                agentPins = { "Admin": "0000", "Agent 1": "1111", "Agent 2": "2222", "Agent 3": "3333" };
-            }
-        }
-
-        function renderKeypad() {
-            const grid = document.getElementById('keypadGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '✓'];
-            
-            keys.forEach(key => {
-                const btn = document.createElement('button');
-                btn.className = "w-14 h-14 rounded-full bg-slate-50 hover:bg-indigo-100 text-slate-700 font-bold text-xl transition-colors flex items-center justify-center";
-                btn.innerText = key;
-                btn.onclick = () => handleKey(key);
-                grid.appendChild(btn);
-            });
-        }
-
-        function handleKey(key) {
-            if (key === 'C') {
-                enteredPin = "";
-            } else if (key === '✓') {
-                verifyPin();
-            } else if (typeof key === 'number' && enteredPin.length < 4) {
-                enteredPin += key;
-                if (enteredPin.length === 4) setTimeout(verifyPin, 150);
-            }
-            updatePinDots();
-        }
-
-        function updatePinDots() {
+        const updatePinDots = () => {
             for (let i = 0; i < 4; i++) {
                 const dot = document.getElementById(`dot-${i}`);
                 if (dot) {
@@ -432,20 +348,24 @@
                     else dot.classList.remove('filled');
                 }
             }
-        }
+        };
 
-        async function verifyPin() {
-            // If pins aren't loaded yet, try one last time
-            if (!agentPins[currentAgent]) {
-                await fetchAgentPins();
+        window.handleKey = (key) => {
+            if (key === 'C') enteredPin = "";
+            else if (key === '✓') verifyPin();
+            else if (typeof key === 'number' && enteredPin.length < 4) {
+                enteredPin += key;
+                if (enteredPin.length === 4) setTimeout(verifyPin, 150);
             }
+            updatePinDots();
+        };
 
+        const verifyPin = async () => {
+            // Check pins list
             if (enteredPin === agentPins[currentAgent]) {
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('currentUserLabel').innerText = `IDENTIFIED: ${currentAgent}`;
-                if (currentAgent === 'Admin') {
-                    document.getElementById('adminSettingsBtn').classList.remove('hidden');
-                }
+                if (currentAgent === 'Admin') document.getElementById('adminSettingsBtn').classList.remove('hidden');
                 startSync();
             } else {
                 enteredPin = "";
@@ -455,7 +375,35 @@
                 pinBox.classList.add('animate-shake');
                 setTimeout(() => pinBox.classList.remove('animate-shake'), 400);
             }
-        }
+        };
+
+        // KEYPAD GENERATION
+        const renderKeypad = () => {
+            const grid = document.getElementById('keypadGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '✓'];
+            keys.forEach(key => {
+                const btn = document.createElement('button');
+                btn.className = "w-14 h-14 rounded-full bg-slate-50 hover:bg-indigo-100 text-slate-700 font-bold text-xl transition-colors flex items-center justify-center";
+                btn.innerText = key;
+                btn.onclick = () => window.handleKey(key);
+                grid.appendChild(btn);
+            });
+        };
+
+        const fetchAgentPins = async () => {
+            if (!isAuthReady) return;
+            try {
+                // Rule 1: Use specific artifacts path
+                const pinRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_security', 'pins');
+                const pinDoc = await getDoc(pinRef);
+                if (pinDoc.exists()) agentPins = pinDoc.data();
+                else await setDoc(pinRef, agentPins);
+            } catch (e) { 
+                console.warn("Using default PINs (Database rules may be blocking config access)");
+            }
+        };
 
         const startSync = () => {
             if (!isAuthReady) return;
@@ -465,24 +413,18 @@
                 window.renderLeads();
                 const loader = document.getElementById('loadingState');
                 if (loader) loader.classList.add('hidden');
-            }, (error) => {
-                console.error("Sync Error:", error);
-            });
+            }, (error) => console.error("Sync error:", error));
         };
 
+        // QUICK STATUS UPDATE
         window.quickUpdateStatus = async (id, newStatus) => {
             try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), {
-                    status: newStatus,
-                    updatedAt: new Date().toISOString()
-                });
-                showToast(`Status changed to ${newStatus}`);
-            } catch (err) {
-                console.error(err);
-                showToast("Update failed");
-            }
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), { status: newStatus, updatedAt: new Date().toISOString() });
+                showToast(`Status updated: ${newStatus}`);
+            } catch (err) { showToast("Permission Denied"); }
         };
 
+        // TABLE RENDERING
         window.renderLeads = () => {
             const tbody = document.getElementById('leadTableBody');
             if (!tbody) return;
@@ -505,42 +447,28 @@
             } else {
                 document.getElementById('emptyState').classList.add('hidden');
                 const statusOptions = ["New", "Interested", "Call Back", "Not Responding", "Joined", "Closed", "Lost"];
-                
                 tbody.innerHTML = filtered.map(lead => `
                     <tr class="hover:bg-indigo-50/40 transition border-b border-slate-50 group">
                         <td class="p-4">
+                            <!-- Clickable Name to Edit -->
                             <button onclick="window.editLead('${lead.id}')" class="font-bold text-slate-800 text-sm hover:text-indigo-600 transition-colors text-left block">
                                 ${lead.name}
                             </button>
-                            <div class="flex items-center space-x-2 mt-1">
-                                <span class="text-[10px] text-indigo-600 font-mono font-bold">${lead.phone}</span>
-                                <span class="agent-pill">
-                                    <i class="fas fa-id-badge mr-1 opacity-40"></i> ${lead.assignedTo || 'Open'}
-                                </span>
-                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono font-bold mt-1">${lead.phone} | ${lead.assignedTo || 'Open'}</div>
                         </td>
                         <td class="p-4">
-                            <select 
-                                onchange="window.quickUpdateStatus('${lead.id}', this.value)" 
-                                class="status-badge ${getStatusClass(lead.status)} appearance-none cursor-pointer outline-none border-none pr-6 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22currentColor%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_8px_center] bg-no-repeat"
-                            >
+                            <!-- Direct Status Update -->
+                            <select onchange="window.quickUpdateStatus('${lead.id}', this.value)" class="status-badge ${getStatusClass(lead.status)} border-none appearance-none outline-none cursor-pointer">
                                 ${statusOptions.map(opt => `<option value="${opt}" ${lead.status === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                             </select>
                         </td>
                         <td class="p-4">
-                            <p class="text-xs text-slate-500 italic max-w-xs truncate" title="${lead.notes}">${lead.notes || '<span class="text-slate-200">No entry</span>'}</p>
+                            <p class="text-xs text-slate-500 italic truncate max-w-[200px]" title="${lead.notes}">${lead.notes || '...'}</p>
                         </td>
                         <td class="p-4 text-right">
-                            <div class="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href="tel:${lead.phone}" class="w-9 h-9 flex items-center justify-center bg-emerald-100 text-emerald-700 rounded-xl hover:bg-emerald-600 hover:text-white transition shadow-sm">
-                                    <i class="fas fa-phone-alt text-xs"></i>
-                                </a>
-                                <button onclick="window.shareLead('${lead.id}')" class="w-9 h-9 flex items-center justify-center bg-indigo-100 text-indigo-700 rounded-xl hover:bg-indigo-600 hover:text-white transition shadow-sm">
-                                    <i class="fab fa-whatsapp text-xs"></i>
-                                </button>
-                                <button onclick="window.editLead('${lead.id}')" class="w-9 h-9 flex items-center justify-center bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-800 hover:text-white transition shadow-sm">
-                                    <i class="fas fa-edit text-[10px]"></i>
-                                </button>
+                            <div class="flex justify-end space-x-2">
+                                <a href="tel:${lead.phone}" class="w-8 h-8 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition shadow-sm"><i class="fas fa-phone-alt text-xs"></i></a>
+                                <button onclick="window.shareLead('${lead.id}')" class="w-8 h-8 flex items-center justify-center bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-600 hover:text-white transition shadow-sm"><i class="fab fa-whatsapp text-xs"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -550,27 +478,25 @@
         };
 
         const getStatusClass = (status) => {
-            const map = {
-                'New': 'status-new', 'Interested': 'status-interested', 'Call Back': 'status-callback',
-                'Not Responding': 'status-not-responding', 'Joined': 'status-joined', 
-                'Closed': 'status-closed', 'Lost': 'status-lost'
-            };
+            const map = { 'New': 'status-new', 'Interested': 'status-interested', 'Call Back': 'status-callback', 'Not Responding': 'status-not-responding', 'Joined': 'status-joined', 'Closed': 'status-closed', 'Lost': 'status-lost' };
             return map[status] || 'status-new';
         };
 
         const updateStats = () => {
             const totalEl = document.getElementById('stat-total');
-            if (!totalEl) return;
-            totalEl.innerText = leads.length;
-            document.getElementById('stat-joined').innerText = leads.filter(l => l.status === 'Joined').length;
-            document.getElementById('stat-interested').innerText = leads.filter(l => l.status === 'Interested').length;
-            document.getElementById('stat-callback').innerText = leads.filter(l => l.status === 'Call Back').length;
-            document.getElementById('stat-no-response').innerText = leads.filter(l => l.status === 'Not Responding').length;
-            document.getElementById('stat-closed').innerText = leads.filter(l => l.status === 'Closed').length;
-            document.getElementById('stat-lost').innerText = leads.filter(l => l.status === 'Lost').length;
-            document.getElementById('stat-my').innerText = leads.filter(l => l.assignedTo === currentAgent).length;
+            if (totalEl) {
+                totalEl.innerText = leads.length;
+                document.getElementById('stat-joined').innerText = leads.filter(l => l.status === 'Joined').length;
+                document.getElementById('stat-interested').innerText = leads.filter(l => l.status === 'Interested').length;
+                document.getElementById('stat-callback').innerText = leads.filter(l => l.status === 'Call Back').length;
+                document.getElementById('stat-no-response').innerText = leads.filter(l => l.status === 'Not Responding').length;
+                document.getElementById('stat-closed').innerText = leads.filter(l => l.status === 'Closed').length;
+                document.getElementById('stat-lost').innerText = leads.filter(l => l.status === 'Lost').length;
+                document.getElementById('stat-my').innerText = leads.filter(l => l.assignedTo === currentAgent).length;
+            }
         };
 
+        // ADMIN SETTINGS
         window.openAdminSettings = () => {
             document.getElementById('adminPanelModal').style.display = 'flex';
             const list = document.getElementById('pinManagementList');
@@ -597,30 +523,21 @@
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_security', 'pins'), agentPins);
                     showToast(`PIN Updated for ${user}`);
                     window.openAdminSettings();
-                } catch (e) {
-                    showToast("Permission denied.");
-                }
-            } else {
-                showToast("Invalid PIN format.");
-            }
+                } catch (e) { showToast("Permission denied."); }
+            } else { showToast("Invalid format."); }
         };
 
-        window.openImportModal = () => document.getElementById('importModal').style.display = 'flex';
-        window.closeImportModal = () => document.getElementById('importModal').style.display = 'none';
-        window.openAddModal = () => {
-            document.getElementById('editId').value = "";
-            document.getElementById('leadForm').reset();
-            document.getElementById('leadAssignee').value = currentAgent;
-            document.getElementById('leadModal').style.display = 'flex';
+        // IMPORT/EDIT/ADD
+        window.openImportModal = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = (e) => window.processUpload(e.target.files[0]);
+            input.click();
         };
-        window.closeModal = () => document.getElementById('leadModal').style.display = 'none';
 
-        window.processUpload = async () => {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const assignee = document.getElementById('importAssignee').value;
-            if (!file) return showToast("Select CSV first.");
-
+        window.processUpload = async (file) => {
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const text = e.target.result;
@@ -630,18 +547,13 @@
                     const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
                     if (cols.length >= 2 && cols[1]) {
                         await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), {
-                            name: cols[0],
-                            phone: cols[1],
-                            status: 'New',
-                            notes: cols[3] || '',
-                            assignedTo: assignee,
-                            createdAt: new Date().toISOString()
+                            name: cols[0], phone: cols[1], status: 'New', notes: cols[3] || '',
+                            assignedTo: "Unassigned", createdAt: new Date().toISOString()
                         });
                         count++;
                     }
                 }
                 showToast(`Imported ${count} leads.`);
-                window.closeImportModal();
             };
             reader.readAsText(file);
         };
@@ -658,16 +570,17 @@
             document.getElementById('leadModal').style.display = 'flex';
         };
 
-        window.shareLead = (id) => {
-            const lead = leads.find(l => l.id === id);
-            if (!lead) return;
-            const text = `*Follow-up*\nName: ${lead.name}\nPhone: ${lead.phone}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        window.closeModal = () => document.getElementById('leadModal').style.display = 'none';
+        
+        window.openAddModal = () => {
+            document.getElementById('editId').value = "";
+            document.getElementById('leadForm').reset();
+            document.getElementById('leadAssignee').value = currentAgent;
+            document.getElementById('leadModal').style.display = 'flex';
         };
 
         document.getElementById('leadForm').onsubmit = async (e) => {
             e.preventDefault();
-            if (!isAuthReady) return;
             const id = document.getElementById('editId').value;
             const data = {
                 name: document.getElementById('leadName').value,
@@ -679,12 +592,17 @@
             };
             try {
                 if (id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), data);
-                else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), data);
+                else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), { ...data, createdAt: new Date().toISOString() });
                 showToast("Saved");
                 window.closeModal();
-            } catch (err) {
-                showToast("Save Error.");
-            }
+            } catch (err) { showToast("Save Error"); }
+        };
+
+        window.shareLead = (id) => {
+            const lead = leads.find(l => l.id === id);
+            if (!lead) return;
+            const text = `*Lead Update*\nName: ${lead.name}\nPhone: ${lead.phone}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
 
         function showToast(msg) {
@@ -699,9 +617,8 @@
             }, 3000);
         }
 
-        // Initialize immediately
+        // STARTUP
         renderKeypad();
-        initAuthentication();
     </script>
 </body>
 </html>
