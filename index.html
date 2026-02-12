@@ -27,7 +27,7 @@
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- Profile Selection Overlay (No PIN) -->
+    <!-- Profile Selection Overlay -->
     <div id="authOverlay" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
         <div id="step-selection" class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-slide">
             <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3">
@@ -175,7 +175,7 @@
     <div id="leadModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 animate-slide">
             <div class="flex justify-between items-center mb-6">
-                <h3 id="modalTitle" class="text-xl font-bold text-slate-800">Lead File</h3>
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-800">Lead Details</h3>
                 <button onclick="window.closeModal()" class="text-slate-400 hover:text-slate-600 p-2"><i class="fas fa-times"></i></button>
             </div>
             <form id="leadForm" class="space-y-4">
@@ -233,11 +233,12 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // FIREBASE CONFIG
-        const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "", 
+        // ENV HANDLING
+        const apiKey = ""; 
+        const fallbackConfig = {
+            apiKey: "AIzaSyAraa3TDkLEs0tj0REa918PjlD_GAuHL0c", 
             authDomain: "telecrm-c0cd8.firebaseapp.com",
             projectId: "telecrm-c0cd8",
             storageBucket: "telecrm-c0cd8.firebasestorage.app",
@@ -246,7 +247,10 @@
             measurementId: "G-5R78XQ46DZ"
         };
         
-        const app = initializeApp(config);
+        // Correct initialization logic: Do NOT overwrite with "" if the environment injected a valid key
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
+
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'telecrm-c0cd8-v2';
@@ -262,16 +266,27 @@
                 isAuthReady = true;
                 return auth.currentUser;
             }
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                isAuthReady = true;
-            } catch (error) {
-                console.error("Auth Error:", error);
-            }
+            return new Promise((resolve) => {
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        isAuthReady = true;
+                        unsubscribe();
+                        resolve(user);
+                    } else {
+                        (async () => {
+                            try {
+                                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                    await signInWithCustomToken(auth, __initial_auth_token);
+                                } else {
+                                    await signInAnonymously(auth);
+                                }
+                            } catch (error) {
+                                console.error("Auth Initialization Error:", error);
+                            }
+                        })();
+                    }
+                });
+            });
         };
 
         // UI GLOBAL FUNCTIONS
@@ -286,6 +301,7 @@
 
         const startSync = () => {
             if (!isAuthReady) return;
+            // RULE 1: Strict Paths
             const leadsRef = collection(db, 'artifacts', appId, 'public', 'data', 'leads');
             onSnapshot(leadsRef, (snapshot) => {
                 leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -302,7 +318,7 @@
                     updatedAt: new Date().toISOString() 
                 });
                 showToast(`Status updated: ${newStatus}`);
-            } catch (err) { showToast("Permission Denied"); }
+            } catch (err) { showToast("Update Failed"); }
         };
 
         window.renderLeads = () => {
@@ -313,7 +329,9 @@
             const agentF = document.getElementById('agentFilter').value;
 
             const filtered = leads.filter(l => {
-                const matchesSearch = (l.name || "").toLowerCase().includes(search) || (l.phone || "").includes(search);
+                const nameMatch = (l.name || "").toLowerCase().includes(search);
+                const phoneMatch = (l.phone || "").includes(search);
+                const matchesSearch = nameMatch || phoneMatch;
                 const matchesStatus = statusF === 'all' || l.status === statusF;
                 let matchesAgent = true;
                 if (agentF === 'me') matchesAgent = l.assignedTo === currentAgent;
@@ -462,6 +480,9 @@
                 t.style.transform = "translate(-50%, 10px)";
             }, 3000);
         }
+
+        // Initialize immediately
+        initAuthentication();
     </script>
 </body>
 </html>
