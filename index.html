@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina CRM - Team Telecalling</title>
+    <title>Lumina CRM - Institute Telecalling</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -24,33 +24,32 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-slide { animation: slideUp 0.3s ease-out forwards; }
         
-        /* Smooth Mobile Transitions */
-        .mobile-btn { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+        .mobile-action-btn { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; transition: all 0.2s; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
     <!-- Profile Selection Overlay -->
     <div id="authOverlay" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
-        <div id="step-selection" class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-md w-full text-center animate-slide">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-md w-full text-center animate-slide">
             <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3">
                 <i class="fas fa-users text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Team Login</h2>
-            <p class="text-slate-500 mb-8 text-sm">Welcome! Please select your name</p>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Institute CRM Login</h2>
+            <p class="text-slate-500 mb-8 text-sm">Please select your profile to continue</p>
             <div class="grid grid-cols-1 gap-3">
-                <button onclick="window.selectUser('Admin')" class="w-full py-3.5 bg-slate-800 text-white rounded-xl font-bold transition-all hover:bg-slate-700 flex items-center px-6">
-                    <i class="fas fa-user-shield mr-4 text-amber-400"></i> Admin Access
+                <button onclick="window.selectUser('Admin')" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold transition-all hover:bg-slate-700 flex items-center px-6">
+                    <i class="fas fa-user-shield mr-4 text-amber-400"></i> Admin / Manager
                 </button>
                 <div class="h-px bg-slate-100 my-2"></div>
-                <button onclick="window.selectUser('SHIBILA')" class="w-full py-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
-                    <i class="fas fa-headset mr-4 opacity-40 text-indigo-500"></i> SHIBILA
+                <button onclick="window.selectUser('SHIBILA')" class="w-full py-4 bg-white border border-slate-200 hover:bg-indigo-50 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
+                    <i class="fas fa-headset mr-4 text-indigo-500"></i> SHIBILA
                 </button>
-                <button onclick="window.selectUser('NISHMA')" class="w-full py-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
-                    <i class="fas fa-headset mr-4 opacity-40 text-emerald-500"></i> NISHMA
+                <button onclick="window.selectUser('NISHMA')" class="w-full py-4 bg-white border border-slate-200 hover:bg-indigo-50 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
+                    <i class="fas fa-headset mr-4 text-emerald-500"></i> NISHMA
                 </button>
-                <button onclick="window.selectUser('SRIJITHA')" class="w-full py-3.5 bg-slate-50 hover:bg-indigo-50 border border-slate-200 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
-                    <i class="fas fa-headset mr-4 opacity-40 text-orange-500"></i> SRIJITHA
+                <button onclick="window.selectUser('SRIJITHA')" class="w-full py-4 bg-white border border-slate-200 hover:bg-indigo-50 rounded-xl font-bold text-slate-700 transition-all flex items-center px-6">
+                    <i class="fas fa-headset mr-4 text-orange-500"></i> SRIJITHA
                 </button>
             </div>
         </div>
@@ -60,25 +59,25 @@
     <nav class="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3 w-full md:w-auto">
-                <i class="fas fa-university text-2xl"></i>
+                <i class="fas fa-university text-2xl text-indigo-200"></i>
                 <div>
-                    <span class="text-lg font-bold block leading-none">Lumina CRM</span>
-                    <span id="currentUserLabel" class="text-[10px] uppercase font-bold text-indigo-200 tracking-widest">CONNECTING...</span>
+                    <span class="text-lg font-bold block leading-none">Lumina Institute CRM</span>
+                    <span id="currentUserLabel" class="text-[10px] uppercase font-bold text-indigo-300 tracking-widest">CONNECTING...</span>
                 </div>
             </div>
             <div class="flex items-center justify-between md:justify-end w-full md:w-auto space-x-2">
                 <div class="flex items-center space-x-2">
-                    <button id="adminDeleteBtn" onclick="window.deleteAllLeads()" class="hidden bg-rose-500 hover:bg-rose-600 px-3 py-2 rounded-lg transition text-xs font-bold items-center shadow-md">
-                        <i class="fas fa-trash-sweep mr-2"></i> Clear All
+                    <button id="adminDeleteBtn" onclick="window.deleteAllLeads()" class="hidden bg-rose-500 hover:bg-rose-600 px-3 py-2 rounded-lg transition text-[10px] font-bold items-center shadow-md">
+                        <i class="fas fa-trash-sweep mr-1.5"></i> CLEAR LIST
                     </button>
                     <button onclick="window.openImportModal()" class="bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition text-xs font-semibold flex items-center border border-white/10">
-                        <i class="fas fa-file-excel mr-2"></i> Import
+                        <i class="fas fa-file-excel mr-1.5 text-emerald-300"></i> IMPORT
                     </button>
                     <button onclick="window.openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 px-3 py-2 rounded-lg transition text-xs font-bold flex items-center shadow-md">
-                        <i class="fas fa-plus mr-2"></i> New
+                        <i class="fas fa-plus mr-1.5"></i> ADD NEW
                     </button>
                 </div>
-                <button onclick="location.reload()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg hover:bg-white/20 transition" title="Logout">
+                <button onclick="location.reload()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg hover:bg-white/20 transition">
                     <i class="fas fa-power-off text-sm text-rose-300"></i>
                 </button>
             </div>
@@ -86,10 +85,10 @@
     </nav>
 
     <main class="container mx-auto p-4 lg:p-6">
-        <!-- Dashboard Stats - Responsive Grid -->
+        <!-- Dashboard Stats -->
         <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
             <div class="glass-card p-3 rounded-xl border-l-4 border-slate-400">
-                <p class="text-slate-400 text-[9px] font-bold uppercase">Total</p>
+                <p class="text-slate-400 text-[9px] font-bold uppercase">All Leads</p>
                 <p id="stat-total" class="text-lg font-bold">0</p>
             </div>
             <div class="glass-card p-3 rounded-xl border-l-4 border-emerald-500">
@@ -117,28 +116,28 @@
                 <p id="stat-lost" class="text-lg font-bold">0</p>
             </div>
             <div class="glass-card p-3 rounded-xl border-l-4 border-indigo-500 bg-indigo-50/30">
-                <p class="text-indigo-600 text-[9px] font-bold uppercase">My Scope</p>
+                <p class="text-indigo-600 text-[9px] font-bold uppercase">My Work</p>
                 <p id="stat-my" class="text-lg font-bold text-indigo-700">0</p>
             </div>
         </div>
 
         <!-- Filters Section -->
-        <div class="glass-card p-4 rounded-xl shadow-sm mb-6 flex flex-col lg:flex-row gap-4 items-center">
+        <div class="glass-card p-4 rounded-2xl shadow-sm mb-6 flex flex-col lg:flex-row gap-4 items-center">
             <div class="relative flex-1 w-full">
-                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="searchInput" onkeyup="window.renderLeads()" placeholder="Search student name or phone..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all shadow-sm">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" onkeyup="window.renderLeads()" placeholder="Search by student name or mobile number..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all shadow-sm">
             </div>
             <div class="grid grid-cols-2 gap-2 w-full lg:w-auto">
                 <select id="agentFilter" onchange="window.renderLeads()" class="px-3 py-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <option value="all">Everyone</option>
-                    <option value="me">Assigned to Me</option>
+                    <option value="all">Full List</option>
+                    <option value="me">My Leads</option>
                     <option value="SHIBILA">SHIBILA</option>
                     <option value="NISHMA">NISHMA</option>
                     <option value="SRIJITHA">SRIJITHA</option>
-                    <option value="Unassigned">Unassigned</option>
+                    <option value="Unassigned">Unassigned Pool</option>
                 </select>
                 <select id="statusFilter" onchange="window.renderLeads()" class="px-3 py-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <option value="all">All Status</option>
+                    <option value="all">Any Status</option>
                     <option value="New">New</option>
                     <option value="Interested">Interested</option>
                     <option value="Call Back">Call Back</option>
@@ -150,15 +149,15 @@
             </div>
         </div>
 
-        <!-- Main Table Container -->
+        <!-- Main Lead List Table -->
         <div class="glass-card rounded-2xl shadow-sm overflow-hidden border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[700px]">
+                <table class="w-full text-left border-collapse min-w-[850px]">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
-                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Student & Caller</th>
-                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Status</th>
-                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Latest Note</th>
+                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Student Info & Caller</th>
+                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Lead Status</th>
+                            <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider">Follow-up Notes</th>
                             <th class="p-4 font-bold text-slate-600 text-[10px] uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
@@ -168,40 +167,71 @@
             
             <div id="loadingState" class="p-20 text-center flex flex-col items-center">
                 <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-4"></div>
-                <p class="text-slate-500 text-sm font-medium">Syncing database...</p>
+                <p class="text-slate-500 text-sm font-medium">Updating Live Data...</p>
             </div>
             <div id="emptyState" class="p-20 text-center hidden flex-col items-center">
                 <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-inbox text-2xl text-slate-300"></i>
+                    <i class="fas fa-clipboard-list text-2xl text-slate-300"></i>
                 </div>
-                <p class="text-slate-800 font-bold">No leads found</p>
-                <p class="text-slate-400 text-xs mt-1">Try uploading an Excel file or changing your filters.</p>
+                <p class="text-slate-800 font-bold">No students found</p>
+                <p class="text-slate-400 text-xs mt-1">Try importing an Excel file or clearing search filters.</p>
             </div>
         </div>
     </main>
 
-    <!-- Lead Form Modal -->
+    <!-- Import & Assign Modal -->
+    <div id="importModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 md:p-8 animate-slide">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h3 class="text-xl font-bold text-slate-800">Import Student List</h3>
+                <button onclick="window.closeImportModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-5">
+                <div class="p-5 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 flex flex-col items-center">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-indigo-400 mb-3"></i>
+                    <p class="text-xs text-slate-500 mb-4 text-center">Select CSV file (Columns: Name, Phone, Status, Notes)</p>
+                    <input type="file" id="csvFileInput" accept=".csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Assign leads to:</label>
+                    <select id="importAssignee" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white text-sm shadow-sm font-medium">
+                        <option value="Unassigned">Leave in Unassigned Pool</option>
+                        <option value="SHIBILA">SHIBILA</option>
+                        <option value="NISHMA">NISHMA</option>
+                        <option value="SRIJITHA">SRIJITHA</option>
+                        <option value="Admin">Admin / All</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="window.closeImportModal()" class="flex-1 py-3 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition">Cancel</button>
+                    <button onclick="window.handleImportSubmit()" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Import & Assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lead Detail Modal (CRUD) -->
     <div id="leadModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden p-6 md:p-8 animate-slide">
             <div class="flex justify-between items-center mb-6">
                 <h3 id="modalTitle" class="text-xl font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-user-edit mr-3 text-indigo-500"></i> Lead Details
+                    <i class="fas fa-edit mr-3 text-indigo-500"></i> Edit Student Detail
                 </h3>
                 <button onclick="window.closeModal()" class="text-slate-400 hover:text-slate-600 p-2"><i class="fas fa-times"></i></button>
             </div>
             <form id="leadForm" class="space-y-4">
                 <input type="hidden" id="editId">
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Student Name</label>
-                    <input type="text" id="leadName" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all shadow-sm">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Student Full Name</label>
+                    <input type="text" id="leadName" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm shadow-sm">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mobile Number</label>
-                        <input type="tel" id="leadPhone" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all shadow-sm">
+                        <input type="tel" id="leadPhone" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm shadow-sm">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Status</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Lead Status</label>
                         <select id="leadStatus" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white text-sm shadow-sm">
                             <option value="New">New</option>
                             <option value="Interested">Interested</option>
@@ -214,9 +244,9 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Assigned Telecaller</label>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Assigned To</label>
                     <select id="leadAssignee" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white text-sm shadow-sm">
-                        <option value="Unassigned">Unassigned Pool</option>
+                        <option value="Unassigned">Unassigned</option>
                         <option value="SHIBILA">SHIBILA</option>
                         <option value="NISHMA">NISHMA</option>
                         <option value="SRIJITHA">SRIJITHA</option>
@@ -224,21 +254,48 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Call Remarks / Notes</label>
-                    <textarea id="leadNotes" rows="4" placeholder="Enter conversation details..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm transition-all shadow-sm"></textarea>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Notes / Call History</label>
+                    <textarea id="leadNotes" rows="4" placeholder="Enter conversation details..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm shadow-sm"></textarea>
                 </div>
                 <div class="flex flex-col-reverse md:flex-row gap-3 pt-4">
-                    <button type="button" onclick="window.closeModal()" class="flex-1 py-3 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition">Discard Changes</button>
-                    <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Save Data</button>
+                    <button type="button" onclick="window.closeModal()" class="flex-1 py-3 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">Update Record</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Custom Modal -->
+    <div id="waModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[80] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 animate-slide">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                <i class="fab fa-whatsapp text-emerald-500 mr-2"></i> WhatsApp Message
+            </h3>
+            <p id="waStudentName" class="text-sm font-bold text-slate-600 mb-4"></p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Template</label>
+                    <select id="waTemplate" onchange="window.applyWaTemplate(this.value)" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg outline-none">
+                        <option value="">Custom Message</option>
+                        <option value="intro">Intro (Course Details)</option>
+                        <option value="followup">Follow-up Call</option>
+                        <option value="joined">Joined (Welcome)</option>
+                        <option value="lost">Lost Lead (Final Note)</option>
+                    </select>
+                </div>
+                <textarea id="waMessage" rows="5" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm outline-none resize-none" placeholder="Type message student..."></textarea>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('waModal').style.display='none'" class="flex-1 py-3 text-slate-600 text-sm font-bold">Close</button>
+                    <button onclick="window.sendWaFinal()" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold shadow-lg hover:bg-emerald-600">Send WhatsApp</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl transition-all opacity-0 translate-y-10 flex items-center space-x-3 pointer-events-none z-[100]">
         <i class="fas fa-check-circle text-emerald-400"></i>
-        <span id="toastMsg">Action Success</span>
+        <span id="toastMsg">Success</span>
     </div>
 
     <script type="module">
@@ -246,7 +303,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // FIREBASE CONFIG - Improved Fallback Logic
+        // CONFIG
         const apiKey = "AIzaSyAraa3TDkLEs0tj0REa918PjlD_GAuHL0c"; 
         const fallbackConfig = {
             apiKey: apiKey, 
@@ -257,52 +314,39 @@
             appId: "1:958261959120:web:7938f2e4dedcbffc0bc1d5",
             measurementId: "G-5R78XQ46DZ"
         };
-        
-        // Final logic to merge env variables if present
         const config = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
-        // In external hosting, if apiKey is somehow lost, restore it
         if (!config.apiKey || config.apiKey === "") config.apiKey = apiKey;
 
         const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'telecrm-c0cd8-final';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'telecrm-c0cd8-v2';
 
-        // STATE
         let leads = [];
         let currentAgent = "";
         let isAuthReady = false;
+        let activeWaPhone = "";
 
-        // AUTH STARTUP
+        // AUTH
         const initAuthentication = async () => {
-            if (auth.currentUser) {
-                isAuthReady = true;
-                return auth.currentUser;
-            }
+            if (auth.currentUser) { isAuthReady = true; return auth.currentUser; }
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                } else { await signInAnonymously(auth); }
                 isAuthReady = true;
-            } catch (error) {
-                console.error("Auth Error:", error);
-            }
+            } catch (error) { console.error("Auth Error:", error); }
         };
 
-        // UI GLOBAL FUNCTIONS
+        // PROFILE SELECT
         window.selectUser = async (agent) => {
             currentAgent = agent;
             document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('currentUserLabel').innerText = `CALLER: ${agent}`;
-            
-            // Show Admin tools if applicable
+            document.getElementById('currentUserLabel').innerText = `PROFILE: ${agent}`;
             if (agent === 'Admin') {
                 document.getElementById('adminDeleteBtn').classList.remove('hidden');
                 document.getElementById('adminDeleteBtn').classList.add('flex');
             }
-
             await initAuthentication();
             startSync();
         };
@@ -313,43 +357,21 @@
             onSnapshot(leadsRef, (snapshot) => {
                 leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 window.renderLeads();
-                const loader = document.getElementById('loadingState');
-                if (loader) loader.classList.add('hidden');
+                document.getElementById('loadingState').classList.add('hidden');
             }, (error) => console.error("Sync error:", error));
         };
 
-        // LEAD ACTIONS
-        window.deleteLead = async (id) => {
-            if (!confirm("Are you sure you want to delete this student lead? This cannot be undone.")) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id));
-                showToast("Student deleted");
-            } catch (err) {
-                showToast("Delete failed");
-            }
-        };
-
-        window.deleteAllLeads = async () => {
-            if (!confirm("WARNING: This will delete EVERYTHING in the current list. This is an Admin-only bulk action. Continue?")) return;
-            showToast("Clearing list...");
-            const results = leads.filter(l => true); // Copy of all current leads
-            for (const lead of results) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', lead.id));
-            }
-            showToast("List cleared successfully");
-        };
-
+        // UI CORE
         window.quickUpdateStatus = async (id, newStatus) => {
             try {
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), { 
                     status: newStatus, 
                     updatedAt: new Date().toISOString() 
                 });
-                showToast(`Status: ${newStatus}`);
+                showToast(`Lead marked as ${newStatus}`);
             } catch (err) { showToast("Permission Denied"); }
         };
 
-        // RENDER TABLE
         window.renderLeads = () => {
             const tbody = document.getElementById('leadTableBody');
             if (!tbody) return;
@@ -358,14 +380,12 @@
             const agentF = document.getElementById('agentFilter').value;
 
             const filtered = leads.filter(l => {
-                const nameMatch = (l.name || "").toLowerCase().includes(search);
-                const phoneMatch = (l.phone || "").includes(search);
-                const matchesSearch = nameMatch || phoneMatch;
-                const matchesStatus = statusF === 'all' || l.status === statusF;
-                let matchesAgent = true;
-                if (agentF === 'me') matchesAgent = l.assignedTo === currentAgent;
-                else if (agentF !== 'all') matchesAgent = l.assignedTo === agentF;
-                return matchesSearch && matchesStatus && matchesAgent;
+                const searchMatch = (l.name || "").toLowerCase().includes(search) || (l.phone || "").includes(search);
+                const statusMatch = statusF === 'all' || l.status === statusF;
+                let agentMatch = true;
+                if (agentF === 'me') agentMatch = l.assignedTo === currentAgent;
+                else if (agentF !== 'all') agentMatch = l.assignedTo === agentF;
+                return searchMatch && statusMatch && agentMatch;
             });
 
             if (filtered.length === 0) {
@@ -377,35 +397,36 @@
                 tbody.innerHTML = filtered.map(lead => `
                     <tr class="hover:bg-indigo-50/40 transition border-b border-slate-50 group">
                         <td class="p-4">
-                            <!-- Clickable Name -->
                             <button onclick="window.editLead('${lead.id}')" class="font-bold text-slate-800 text-sm hover:text-indigo-600 transition-colors text-left block">
                                 ${lead.name}
                             </button>
                             <div class="flex items-center space-x-2 mt-1">
                                 <span class="text-[10px] text-indigo-600 font-mono font-bold">${lead.phone}</span>
                                 <span class="agent-pill">
-                                    <i class="fas fa-user-tag mr-1 opacity-40"></i> ${lead.assignedTo || 'Unassigned'}
+                                    <i class="fas fa-id-badge mr-1 opacity-40"></i> ${lead.assignedTo || 'Unassigned'}
                                 </span>
                             </div>
                         </td>
                         <td class="p-4">
-                            <!-- Inline Status Select -->
                             <select onchange="window.quickUpdateStatus('${lead.id}', this.value)" class="status-badge ${getStatusClass(lead.status)} border-none appearance-none outline-none cursor-pointer">
                                 ${statusOptions.map(opt => `<option value="${opt}" ${lead.status === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                             </select>
                         </td>
                         <td class="p-4">
-                            <p class="text-xs text-slate-500 italic truncate max-w-[200px]" title="${lead.notes}">${lead.notes || '...'}</p>
+                            <p class="text-xs text-slate-500 italic truncate max-w-[250px]" title="${lead.notes}">${lead.notes || '<span class="opacity-30">No remarks</span>'}</p>
                         </td>
                         <td class="p-4 text-right">
                             <div class="flex justify-end space-x-2">
-                                <a href="tel:${lead.phone}" class="mobile-btn w-9 h-9 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition shadow-sm">
+                                <a href="tel:${lead.phone}" class="mobile-action-btn bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white shadow-sm" title="Call">
                                     <i class="fas fa-phone-alt text-xs"></i>
                                 </a>
-                                <button onclick="window.shareLead('${lead.id}')" class="mobile-btn w-9 h-9 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-600 hover:text-white transition shadow-sm">
+                                <button onclick="window.openWaModal('${lead.name}', '${lead.phone}')" class="mobile-action-btn bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white shadow-sm" title="WhatsApp Message">
                                     <i class="fab fa-whatsapp text-xs"></i>
                                 </button>
-                                <button onclick="window.deleteLead('${lead.id}')" class="mobile-btn w-9 h-9 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition shadow-sm">
+                                <button onclick="window.editLead('${lead.id}')" class="mobile-action-btn bg-slate-100 text-slate-600 hover:bg-slate-800 hover:text-white shadow-sm" title="Edit Lead">
+                                    <i class="fas fa-pencil-alt text-xs"></i>
+                                </button>
+                                <button onclick="window.deleteLead('${lead.id}')" class="mobile-action-btn bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white shadow-sm" title="Remove Lead">
                                     <i class="fas fa-trash-alt text-xs"></i>
                                 </button>
                             </div>
@@ -416,9 +437,9 @@
             updateStats();
         };
 
-        const getStatusClass = (status) => {
-            const map = { 'New': 'status-new', 'Interested': 'status-interested', 'Call Back': 'status-callback', 'Not Responding': 'status-not-responding', 'Joined': 'status-joined', 'Closed': 'status-closed', 'Lost': 'status-lost' };
-            return map[status] || 'status-new';
+        const getStatusClass = (s) => {
+            const m = { 'New': 'status-new', 'Interested': 'status-interested', 'Call Back': 'status-callback', 'Not Responding': 'status-not-responding', 'Joined': 'status-joined', 'Closed': 'status-closed', 'Lost': 'status-lost' };
+            return m[s] || 'status-new';
         };
 
         const updateStats = () => {
@@ -435,39 +456,79 @@
             }
         };
 
-        // FILE HANDLING
-        window.openImportModal = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.csv';
-            input.onchange = (e) => window.processUpload(e.target.files[0]);
-            input.click();
+        // CRUD ACTIONS
+        window.deleteLead = async (id) => {
+            if (!confirm("Permanently delete this student from the records?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id));
+                showToast("Student deleted");
+            } catch (err) { showToast("Error deleting"); }
         };
 
-        window.processUpload = async (file) => {
-            if (!file) return;
+        window.deleteAllLeads = async () => {
+            if (!confirm("Admin: Delete ALL entries in the institute database? This cannot be undone.")) return;
+            showToast("Processing bulk delete...");
+            for (const lead of leads) { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', lead.id)); }
+            showToast("Full list cleared");
+        };
+
+        // WHATSAPP
+        window.openWaModal = (name, phone) => {
+            activeWaPhone = phone;
+            document.getElementById('waStudentName').innerText = `To: ${name} (${phone})`;
+            document.getElementById('waMessage').value = `Hello ${name}, this is from Lumina Institute regarding your inquiry...`;
+            document.getElementById('waModal').style.display = 'flex';
+        };
+
+        window.applyWaTemplate = (t) => {
+            const name = document.getElementById('waStudentName').innerText.split('To: ')[1].split(' (')[0];
+            const area = document.getElementById('waMessage');
+            if (t === 'intro') area.value = `Hello ${name},\nThank you for inquiring about our courses at Lumina Institute. We have shared the curriculum details. Let us know when we can discuss further!`;
+            if (t === 'followup') area.value = `Hi ${name},\nI tried calling you regarding your admission. Let me know a convenient time to speak. Thanks!`;
+            if (t === 'joined') area.value = `Welcome ${name}!\nWe are excited to have you on board. Your batch details will be shared soon.`;
+            if (t === 'lost') area.value = `Hi ${name},\nWe noticed you chose another path. We wish you the best for your future!`;
+        };
+
+        window.sendWaFinal = () => {
+            const msg = document.getElementById('waMessage').value;
+            const url = `https://wa.me/${activeWaPhone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+            document.getElementById('waModal').style.display = 'none';
+        };
+
+        // IMPORT
+        window.openImportModal = () => document.getElementById('importModal').style.display = 'flex';
+        window.closeImportModal = () => document.getElementById('importModal').style.display = 'none';
+
+        window.handleImportSubmit = async () => {
+            const input = document.getElementById('csvFileInput');
+            const assignee = document.getElementById('importAssignee').value;
+            const file = input.files[0];
+            if (!file) return showToast("Select CSV file first");
+
             const reader = new FileReader();
             reader.onload = async (e) => {
-                const text = e.target.result;
-                const rows = text.split('\n').slice(1);
+                const rows = e.target.result.split('\n').slice(1);
                 let count = 0;
-                showToast("Uploading leads...");
+                showToast("Importing Leads...");
                 for (const row of rows) {
                     const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
                     if (cols.length >= 2 && cols[1]) {
                         await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), {
                             name: cols[0], phone: cols[1], status: 'New', notes: cols[3] || '',
-                            assignedTo: "Unassigned", createdAt: new Date().toISOString()
+                            assignedTo: assignee, createdAt: new Date().toISOString()
                         });
                         count++;
                     }
                 }
-                showToast(`Successfully imported ${count} leads.`);
+                showToast(`Imported ${count} leads to ${assignee}`);
+                window.closeImportModal();
+                input.value = "";
             };
             reader.readAsText(file);
         };
 
-        // MODAL MANAGEMENT
+        // EDIT/ADD
         window.editLead = (id) => {
             const lead = leads.find(l => l.id === id);
             if (!lead) return;
@@ -481,17 +542,15 @@
         };
 
         window.closeModal = () => document.getElementById('leadModal').style.display = 'none';
-        
         window.openAddModal = () => {
             document.getElementById('editId').value = "";
             document.getElementById('leadForm').reset();
-            document.getElementById('leadAssignee').value = currentAgent;
+            document.getElementById('leadAssignee').value = currentAgent === 'Admin' ? 'Unassigned' : currentAgent;
             document.getElementById('leadModal').style.display = 'flex';
         };
 
         document.getElementById('leadForm').onsubmit = async (e) => {
             e.preventDefault();
-            if (!isAuthReady) return showToast("Authenticating...");
             const id = document.getElementById('editId').value;
             const data = {
                 name: document.getElementById('leadName').value,
@@ -504,16 +563,9 @@
             try {
                 if (id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), data);
                 else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), { ...data, createdAt: new Date().toISOString() });
-                showToast("Save Success");
+                showToast("Database Synced");
                 window.closeModal();
-            } catch (err) { showToast("Permission Denied (Check Rules)"); }
-        };
-
-        window.shareLead = (id) => {
-            const lead = leads.find(l => l.id === id);
-            if (!lead) return;
-            const text = `*Follow-up Update*\nName: ${lead.name}\nPhone: ${lead.phone}\nStatus: ${lead.status}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            } catch (err) { showToast("Permission Denied"); }
         };
 
         function showToast(msg) {
@@ -528,7 +580,6 @@
             }, 3000);
         }
 
-        // Initialize Authentication on Load (Silently)
         initAuthentication();
     </script>
 </body>
