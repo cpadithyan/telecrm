@@ -140,6 +140,24 @@
             border-radius: 1rem;
             padding: 1rem;
         }
+
+        .activity-item {
+            border-left: 3px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .activity-item:hover {
+            border-left-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .performance-metric {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-12">
@@ -209,6 +227,7 @@
         <div id="adminNav" class="hidden flex space-x-6 mb-6 border-b border-slate-200 overflow-x-auto whitespace-nowrap">
             <button onclick="window.switchTab('insights')" id="tab-insights" class="tab-btn py-3 px-1 text-sm font-bold text-slate-500 active">📊 Insights</button>
             <button onclick="window.switchTab('master')" id="tab-master" class="tab-btn py-3 px-1 text-sm font-bold text-slate-500">📂 Leads List</button>
+            <button onclick="window.switchTab('performance')" id="tab-performance" class="tab-btn py-3 px-1 text-sm font-bold text-slate-500">📈 Performance</button>
             <button onclick="window.switchTab('team')" id="tab-team" class="tab-btn py-3 px-1 text-sm font-bold text-slate-500">👥 Team Management</button>
         </div>
 
@@ -287,9 +306,14 @@
                         <option value="Lost to Competitor">Lost to Competitor</option>
                     </select>
                 </div>
-                <select id="batchFilter" onchange="window.renderLeads()" class="w-full lg:w-44 px-3 py-3 rounded-xl border border-slate-200 bg-white text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <option value="all">All Batches</option>
-                </select>
+                <div class="flex gap-2 w-full lg:w-auto">
+                    <select id="batchFilter" onchange="window.renderLeads()" class="flex-1 lg:w-44 px-3 py-3 rounded-xl border border-slate-200 bg-white text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
+                        <option value="all">All Batches</option>
+                    </select>
+                    <button id="deleteBatchBtn" onclick="window.openDeleteBatchModal()" class="hidden px-3 py-3 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 active:scale-95 transition shadow-sm">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- MOBILE CARDS VIEW -->
@@ -324,6 +348,16 @@
             </div>
         </div>
 
+        <!-- PERFORMANCE TAB -->
+        <div id="sec-performance" class="section hidden animate-slide">
+            <div class="mb-6">
+                <h3 class="text-2xl font-black text-slate-800 mb-2">Staff Performance Tracker</h3>
+                <p class="text-slate-500 text-sm">Monitor team activity and lead progression</p>
+            </div>
+
+            <div id="performanceContent" class="space-y-6"></div>
+        </div>
+
         <div id="sec-team" class="section hidden animate-slide">
             <div class="flex justify-between items-center mb-6 px-1">
                 <h3 class="text-xl font-black text-slate-800 tracking-tight">System Team</h3>
@@ -343,6 +377,45 @@
                 <button onclick="window.closeSecuritySettings()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times"></i></button>
             </div>
             <div class="space-y-3" id="pinUserList"></div>
+        </div>
+    </div>
+
+    <!-- DELETE BATCH MODAL -->
+    <div id="deleteBatchModal" class="fixed inset-0 bg-slate-900/80 hidden items-center justify-center z-[75] p-4 backdrop-blur-md">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 animate-slide">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h3 class="text-xl font-black text-slate-800 flex items-center">
+                    <i class="fas fa-trash-alt text-rose-500 mr-3"></i>
+                    Delete Batch
+                </h3>
+                <button onclick="window.closeDeleteBatchModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 mb-6">
+                <p class="text-sm text-rose-800 font-bold mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Warning: This action cannot be undone!</p>
+                <p class="text-xs text-rose-600">All leads in the selected batch will be permanently deleted.</p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-black text-slate-600 uppercase mb-3">Select Batch to Delete</label>
+                <select id="batchDeleteSelect" class="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 bg-white text-sm font-bold outline-none shadow-sm">
+                    <option value="">-- Select a Batch --</option>
+                </select>
+            </div>
+
+            <div id="batchDeletePreview" class="hidden mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <p class="text-xs font-bold text-slate-600 mb-2">This will delete:</p>
+                <p id="batchDeleteCount" class="text-2xl font-black text-rose-600"></p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="window.closeDeleteBatchModal()" class="flex-1 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 transition">
+                    Cancel
+                </button>
+                <button onclick="window.confirmDeleteBatch()" class="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition active:scale-95 shadow-lg">
+                    Delete Batch
+                </button>
+            </div>
         </div>
     </div>
 
@@ -475,7 +548,7 @@
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDoc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // FIREBASE CONFIG
         const firebaseConfig = {
@@ -496,6 +569,7 @@
 
         // GLOBAL STATE
         let leads = [];
+        let activities = []; // Track staff activities
         let users = ["Admin", "SHIBILA", "NISHMA", "SRIJITHA"];
         let agentPins = { "Admin": "0000", "SHIBILA": "1111", "NISHMA": "2222", "SRIJITHA": "3333" };
         let currentAgent = "";
@@ -503,7 +577,7 @@
         let isAuthReady = false;
         let chartInstance = null;
         let activeWaPhone = "";
-        let parsedFileData = null; // Store parsed CSV/Excel data
+        let parsedFileData = null;
         
         // STATUS CONFIGURATION
         const STATUS_LIST = [
@@ -520,7 +594,6 @@
         ];
 
         console.log("✅ Global state initialized");
-        console.log("👥 Users:", users);
 
         // UTILITY: Status class mapping
         function getStatusClass(status) {
@@ -539,49 +612,52 @@
             return statusMap[status] || 'status-new-lead';
         }
 
+        // Log activity when status changes
+        async function logActivity(leadId, leadName, oldStatus, newStatus, agent) {
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'activities'), {
+                    leadId,
+                    leadName,
+                    oldStatus,
+                    newStatus,
+                    agent,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Activity log error:", e);
+            }
+        }
+
         // AUTH & BOOTSTRAP
         const boot = async () => {
             console.log("🥾 Booting system...");
             
             try {
-                console.log("🔐 Attempting anonymous sign-in...");
                 await signInAnonymously(auth);
-                console.log("✅ Anonymous sign-in successful");
                 
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
-                        console.log("👤 User authenticated:", user.uid);
                         isAuthReady = true;
                         
-                        // Load Cloud Config
                         const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_security', 'config');
                         try {
-                            console.log("📥 Loading cloud config...");
                             const configDoc = await getDoc(configRef);
                             if (configDoc.exists()) {
                                 const data = configDoc.data();
                                 users = data.users || users;
                                 agentPins = data.pins || agentPins;
-                                console.log("✅ Cloud config loaded:", users);
                             } else {
-                                console.log("📤 Creating new cloud config...");
                                 await setDoc(configRef, { users, pins: agentPins });
-                                console.log("✅ Cloud config created");
                             }
                         } catch (e) { 
-                            console.warn("⚠️ Config access issue:", e);
                             showToast("Using default users");
                         }
                         
-                        console.log("🎨 Rendering login buttons...");
                         renderLoginButtons();
-                        console.log("⌨️ Rendering keypad...");
                         renderKeypad();
-                        console.log("✅ Boot complete!");
                     }
                 });
             } catch (err) {
-                console.error("❌ Boot failure:", err);
                 showToast("Connection issue. Using defaults.");
                 renderLoginButtons(); 
                 renderKeypad();
@@ -589,14 +665,9 @@
         };
 
         const renderLoginButtons = () => {
-            console.log("🔘 renderLoginButtons called");
             const container = document.getElementById('userListButtons');
-            if (!container) {
-                console.error("❌ userListButtons container not found!");
-                return;
-            }
+            if (!container) return;
             
-            console.log("📝 Rendering", users.length, "user buttons");
             const html = users.map(user => `
                 <button onclick="window.selectUser('${user}')" class="w-full py-4 ${user === 'Admin' ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-700'} rounded-2xl font-bold transition-all hover:opacity-80 flex items-center px-6 shadow-sm active:scale-95">
                     <div class="w-8 h-8 rounded-lg ${user === 'Admin' ? 'bg-amber-400' : 'bg-indigo-100'} flex items-center justify-center mr-4 text-[10px] font-black uppercase tracking-tighter">${user[0]}</div> ${user}
@@ -604,22 +675,12 @@
             `).join('');
             
             container.innerHTML = html;
-            console.log("✅ User buttons rendered successfully");
-            
-            // Update status message
-            const statusEl = document.getElementById('selectionStatus');
-            if (statusEl) {
-                statusEl.innerText = "Select your profile to continue";
-            }
+            document.getElementById('selectionStatus').innerText = "Select your profile to continue";
         };
 
         const renderKeypad = () => {
-            console.log("⌨️ renderKeypad called");
             const grid = document.getElementById('keypadGrid');
-            if (!grid) {
-                console.error("❌ keypadGrid not found!");
-                return;
-            }
+            if (!grid) return;
             
             grid.innerHTML = '';
             const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '✓'];
@@ -630,12 +691,9 @@
                 b.onclick = () => window.handleKey(k);
                 grid.appendChild(b);
             });
-            console.log("✅ Keypad rendered");
         };
 
-        // AUTH & PIN
         window.selectUser = (agent) => {
-            console.log("👤 User selected:", agent);
             currentAgent = agent;
             document.getElementById('step-selection').classList.add('hidden');
             document.getElementById('step-pin').classList.remove('hidden');
@@ -645,7 +703,6 @@
         };
 
         window.backToSelection = () => {
-            console.log("⬅️ Back to selection");
             document.getElementById('step-pin').classList.add('hidden');
             document.getElementById('step-selection').classList.remove('hidden');
             enteredPin = "";
@@ -672,9 +729,7 @@
         };
 
         const verifyPin = () => {
-            console.log("🔐 Verifying PIN for", currentAgent);
             if (enteredPin === agentPins[currentAgent]) {
-                console.log("✅ PIN correct!");
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('currentUserLabel').innerText = currentAgent;
                 
@@ -687,8 +742,8 @@
                 
                 setupSelectLists();
                 startSync();
+                startActivitySync();
             } else {
-                console.log("❌ PIN incorrect");
                 enteredPin = "";
                 updatePinDots();
                 showToast("Invalid PIN");
@@ -722,11 +777,7 @@
         };
 
         const startSync = () => {
-            console.log("🔄 Starting Firestore sync...");
-            if (!isAuthReady || !auth.currentUser) {
-                showToast("Auth not ready");
-                return;
-            }
+            if (!isAuthReady || !auth.currentUser) return;
             
             const leadsRef = collection(db, 'artifacts', appId, 'public', 'data', 'leads');
             
@@ -736,7 +787,6 @@
             }, 8000);
 
             onSnapshot(leadsRef, (snapshot) => {
-                console.log("📊 Received", snapshot.docs.length, "leads");
                 leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 window.renderLeads();
                 window.updateAdminDashboard();
@@ -745,10 +795,110 @@
                 document.getElementById('loadingState')?.classList.add('hidden');
             }, (err) => {
                 console.error("❌ Firestore Error:", err);
-                showToast("Database access error - check rules");
+                showToast("Database access error");
                 clearTimeout(timer);
                 document.getElementById('loadingState')?.classList.add('hidden');
             });
+        };
+
+        const startActivitySync = () => {
+            if (!isAuthReady || !auth.currentUser) return;
+            
+            const activitiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'activities');
+            
+            onSnapshot(activitiesRef, (snapshot) => {
+                activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (currentAgent === 'Admin') {
+                    window.renderPerformanceTab();
+                }
+            });
+        };
+
+        // PERFORMANCE TAB
+        window.renderPerformanceTab = () => {
+            const container = document.getElementById('performanceContent');
+            if (!container) return;
+
+            const staffMembers = users.filter(u => u !== 'Admin');
+            
+            let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">';
+            
+            staffMembers.forEach(staff => {
+                const staffLeads = leads.filter(l => l.assignedTo === staff);
+                const staffActivities = activities.filter(a => a.agent === staff);
+                
+                // Calculate metrics
+                const totalLeads = staffLeads.length;
+                const enrolledCount = staffLeads.filter(l => l.status === 'Enrolled').length;
+                const progressedCount = staffActivities.filter(a => {
+                    const oldIdx = STATUS_LIST.indexOf(a.oldStatus);
+                    const newIdx = STATUS_LIST.indexOf(a.newStatus);
+                    return newIdx > oldIdx; // Moved forward
+                }).length;
+                
+                const conversionRate = totalLeads > 0 ? Math.round((enrolledCount / totalLeads) * 100) : 0;
+                
+                // Recent activity (last 10)
+                const recentActivity = staffActivities
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 10);
+                
+                html += `
+                    <div class="glass-card p-6 rounded-[2rem] shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black text-lg">
+                                    ${staff[0]}
+                                </div>
+                                <div>
+                                    <h4 class="font-black text-slate-800 text-lg">${staff}</h4>
+                                    <p class="text-xs text-slate-400 uppercase font-bold">Performance Tracker</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 mb-6">
+                            <div class="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                                <p class="text-2xl font-black text-blue-600">${totalLeads}</p>
+                                <p class="text-[9px] text-blue-600 font-bold uppercase tracking-wider">Total Leads</p>
+                            </div>
+                            <div class="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-100">
+                                <p class="text-2xl font-black text-emerald-600">${enrolledCount}</p>
+                                <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider">Enrolled</p>
+                            </div>
+                            <div class="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                                <p class="text-2xl font-black text-purple-600">${progressedCount}</p>
+                                <p class="text-[9px] text-purple-600 font-bold uppercase tracking-wider">Progressed</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl text-white text-center">
+                            <p class="text-xs font-bold uppercase tracking-widest mb-1 opacity-90">Conversion Rate</p>
+                            <p class="text-4xl font-black">${conversionRate}%</p>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4">
+                            <p class="text-xs font-black text-slate-400 uppercase mb-3 tracking-wider">Recent Activity</p>
+                            <div class="space-y-2 max-h-64 overflow-y-auto">
+                                ${recentActivity.length > 0 ? recentActivity.map(act => `
+                                    <div class="activity-item pl-3 py-2 text-xs">
+                                        <p class="font-bold text-slate-700">${act.leadName}</p>
+                                        <p class="text-slate-500">
+                                            <span class="status-badge ${getStatusClass(act.oldStatus)}">${act.oldStatus}</span>
+                                            <i class="fas fa-arrow-right mx-1 text-[8px]"></i>
+                                            <span class="status-badge ${getStatusClass(act.newStatus)}">${act.newStatus}</span>
+                                        </p>
+                                        <p class="text-[9px] text-slate-400 mt-1">${new Date(act.timestamp).toLocaleString()}</p>
+                                    </div>
+                                `).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">No recent activity</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
         };
 
         // ADMIN FEATURES
@@ -757,8 +907,11 @@
             document.getElementById(`tab-${tab}`)?.classList.add('active');
             document.getElementById('sec-insights').classList.toggle('hidden', tab !== 'insights');
             document.getElementById('sec-master').classList.toggle('hidden', tab !== 'master' && tab !== 'insights');
+            document.getElementById('sec-performance').classList.toggle('hidden', tab !== 'performance');
             document.getElementById('sec-team').classList.toggle('hidden', tab !== 'team');
+            
             if (tab === 'team') renderTeamManagement();
+            if (tab === 'performance') window.renderPerformanceTab();
         };
 
         window.updateAdminDashboard = () => {
@@ -875,7 +1028,6 @@
                 // RENDER MOBILE CARDS
                 mobileContainer.innerHTML = filtered.map(lead => `
                     <div class="mobile-lead-card p-5">
-                        <!-- Header: Name & Status -->
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex-1">
                                 <h3 class="font-black text-slate-900 text-lg leading-tight mb-2">${lead.name}</h3>
@@ -891,21 +1043,18 @@
                             </div>
                         </div>
 
-                        <!-- Status Dropdown -->
                         <select 
-                            onchange="window.quickUpdateStatus('${lead.id}', this.value)" 
+                            onchange="window.quickUpdateStatus('${lead.id}', '${lead.status}', this.value)" 
                             class="mobile-status-dropdown ${getStatusClass(lead.status)} mb-4">
                             ${STATUS_LIST.map(opt => `<option value="${opt}" ${lead.status === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                         </select>
 
-                        <!-- Notes -->
                         ${lead.notes ? `
                             <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <p class="text-xs text-slate-600 italic leading-relaxed">${lead.notes}</p>
                             </div>
                         ` : ''}
 
-                        <!-- Action Buttons -->
                         <div class="grid grid-cols-2 gap-3">
                             <a href="tel:${lead.phone}" class="mobile-action-btn-large call-btn">
                                 <i class="fas fa-phone-alt"></i>
@@ -944,7 +1093,7 @@
                             </div>
                         </td>
                         <td class="p-4 text-center">
-                            <select onchange="window.quickUpdateStatus('${lead.id}', this.value)" class="status-badge ${getStatusClass(lead.status)} border-none appearance-none outline-none cursor-pointer shadow-sm active:scale-95 transition-all">
+                            <select onchange="window.quickUpdateStatus('${lead.id}', '${lead.status}', this.value)" class="status-badge ${getStatusClass(lead.status)} border-none appearance-none outline-none cursor-pointer shadow-sm active:scale-95 transition-all">
                                 ${STATUS_LIST.map(opt => `<option value="${opt}" ${lead.status === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                             </select>
                         </td>
@@ -998,6 +1147,90 @@
             u('stat-my', c.my);
         };
 
+        // BATCH DELETE FUNCTIONS
+        window.updateBatchFilter = () => {
+            const f = document.getElementById('batchFilter'); 
+            if (!f) return;
+            
+            const baseSet = currentAgent === 'Admin' ? leads : leads.filter(l => l.assignedTo === currentAgent);
+            const batches = [...new Set(baseSet.map(l => l.batchId || "Manual Import"))];
+            const cur = f.value;
+            
+            f.innerHTML = '<option value="all">All Batches</option>' + 
+                batches.map(bt => `<option value="${bt}">${bt}</option>`).join('');
+            f.value = cur || "all";
+
+            // Show/hide delete batch button for admin
+            if (currentAgent === 'Admin' && batches.length > 0) {
+                document.getElementById('deleteBatchBtn')?.classList.remove('hidden');
+            } else {
+                document.getElementById('deleteBatchBtn')?.classList.add('hidden');
+            }
+
+            // Update batch delete select
+            const batchDeleteSelect = document.getElementById('batchDeleteSelect');
+            if (batchDeleteSelect) {
+                batchDeleteSelect.innerHTML = '<option value="">-- Select a Batch --</option>' +
+                    batches.map(bt => `<option value="${bt}">${bt}</option>`).join('');
+            }
+        };
+
+        window.openDeleteBatchModal = () => {
+            window.updateBatchFilter(); // Refresh batch list
+            document.getElementById('deleteBatchModal').style.display = 'flex';
+            document.getElementById('batchDeletePreview').classList.add('hidden');
+        };
+
+        window.closeDeleteBatchModal = () => {
+            document.getElementById('deleteBatchModal').style.display = 'none';
+            document.getElementById('batchDeleteSelect').value = '';
+            document.getElementById('batchDeletePreview').classList.add('hidden');
+        };
+
+        document.getElementById('batchDeleteSelect')?.addEventListener('change', (e) => {
+            const selectedBatch = e.target.value;
+            const preview = document.getElementById('batchDeletePreview');
+            const count = document.getElementById('batchDeleteCount');
+            
+            if (selectedBatch) {
+                const batchLeads = leads.filter(l => (l.batchId || "Manual Import") === selectedBatch);
+                count.innerText = `${batchLeads.length} leads`;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        });
+
+        window.confirmDeleteBatch = async () => {
+            const selectedBatch = document.getElementById('batchDeleteSelect').value;
+            
+            if (!selectedBatch) {
+                showToast("Please select a batch");
+                return;
+            }
+
+            if (!confirm(`Delete ALL leads from "${selectedBatch}"? This cannot be undone!`)) {
+                return;
+            }
+
+            const batchLeads = leads.filter(l => (l.batchId || "Manual Import") === selectedBatch);
+            let deletedCount = 0;
+
+            showToast(`Deleting ${batchLeads.length} leads...`);
+
+            for (const lead of batchLeads) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', lead.id));
+                    deletedCount++;
+                } catch (e) {
+                    console.error("Delete error:", e);
+                }
+            }
+
+            showToast(`Deleted ${deletedCount} leads from ${selectedBatch}`);
+            window.closeDeleteBatchModal();
+        };
+
         window.openSecuritySettings = () => {
             document.getElementById('securityModal').style.display = 'flex';
             document.getElementById('pinUserList').innerHTML = users.map(user => `
@@ -1027,7 +1260,6 @@
                         window.openSecuritySettings();
                     } catch (e) {
                         showToast("Failed to save PIN");
-                        console.error(e);
                     }
                 }
             } else if (p) { 
@@ -1060,7 +1292,6 @@
                         showToast("Caller added");
                     } catch (e) {
                         showToast("Failed to add user");
-                        console.error(e);
                     }
                 }
             }
@@ -1083,22 +1314,8 @@
                     showToast("User removed");
                 } catch (e) {
                     showToast("Failed to remove user");
-                    console.error(e);
                 }
             }
-        };
-
-        window.updateBatchFilter = () => {
-            const f = document.getElementById('batchFilter'); 
-            if (!f) return;
-            
-            const baseSet = currentAgent === 'Admin' ? leads : leads.filter(l => l.assignedTo === currentAgent);
-            const b = [...new Set(baseSet.map(l => l.batchId || "Manual Import"))];
-            const cur = f.value;
-            
-            f.innerHTML = '<option value="all">All Batches</option>' + 
-                b.map(bt => `<option value="${bt}">${bt}</option>`).join('');
-            f.value = cur || "all";
         };
 
         // IMPORT FUNCTIONS WITH FIELD MAPPING
@@ -1116,7 +1333,6 @@
             reader.onload = (e) => {
                 const data = e.target.result;
                 
-                // Check file type and parse accordingly
                 if (file.name.endsWith('.csv')) {
                     parseCSV(data);
                 } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
@@ -1176,7 +1392,6 @@
             
             const { headers, rows } = parsedFileData;
             
-            // Populate column selectors
             const nameSelect = document.getElementById('nameColumnSelect');
             const phoneSelect = document.getElementById('phoneColumnSelect');
             
@@ -1187,7 +1402,7 @@
             nameSelect.innerHTML = '<option value="">-- Select Column --</option>' + columnOptions;
             phoneSelect.innerHTML = '<option value="">-- Select Column --</option>' + columnOptions;
             
-            // Try to auto-detect name and phone columns
+            // Auto-detect
             headers.forEach((header, index) => {
                 const lowerHeader = header.toLowerCase();
                 if (lowerHeader.includes('name') || lowerHeader.includes('student')) {
@@ -1198,13 +1413,9 @@
                 }
             });
             
-            // Show preview
             renderPreviewTable();
-            
-            // Update count
             document.getElementById('importCount').innerText = rows.length;
             
-            // Switch to step 2
             document.getElementById('importStep1').classList.add('hidden');
             document.getElementById('importStep2').classList.remove('hidden');
         };
@@ -1213,7 +1424,7 @@
             if (!parsedFileData) return;
             
             const { headers, rows } = parsedFileData;
-            const preview = rows.slice(0, 5); // Show first 5 rows
+            const preview = rows.slice(0, 5);
             
             let html = '<table class="preview-table"><thead><tr>';
             headers.forEach(h => {
@@ -1264,7 +1475,6 @@
                 const name = row[nameColIndex];
                 const phone = row[phoneColIndex];
                 
-                // Skip rows without name or phone
                 if (!name || !phone) continue;
                 
                 try {
@@ -1328,6 +1538,9 @@
         document.getElementById('leadForm').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
+            const oldLead = id ? leads.find(l => l.id === id) : null;
+            const oldStatus = oldLead ? oldLead.status : null;
+            
             const data = { 
                 name: document.getElementById('leadName').value, 
                 phone: document.getElementById('leadPhone').value, 
@@ -1340,6 +1553,11 @@
             try {
                 if (id) {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), data);
+                    
+                    // Log activity if status changed
+                    if (oldStatus && oldStatus !== data.status) {
+                        await logActivity(id, data.name, oldStatus, data.status, currentAgent);
+                    }
                 } else {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), { 
                         ...data, 
@@ -1367,13 +1585,22 @@
             document.getElementById('waModal').style.display = 'none'; 
         };
         
-        window.quickUpdateStatus = async (id, s) => { 
+        window.quickUpdateStatus = async (id, oldStatus, newStatus) => {
+            if (oldStatus === newStatus) return;
+            
+            const lead = leads.find(l => l.id === id);
+            if (!lead) return;
+            
             try { 
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), { 
-                    status: s, 
+                    status: newStatus, 
                     updatedAt: new Date().toISOString() 
-                }); 
-                showToast(`Moved to ${s}`); 
+                });
+                
+                // Log activity
+                await logActivity(id, lead.name, oldStatus, newStatus, currentAgent);
+                
+                showToast(`Moved to ${newStatus}`); 
             } catch (e) { 
                 showToast("Sync error");
                 console.error(e);
@@ -1410,7 +1637,7 @@
             if (s === 'all') { 
                 if(sf) sf.value = 'all'; 
             } else if (s === 'me') { 
-                // Just trigger render with current agent filter
+                // Just trigger render
             } else { 
                 if(sf) sf.value = s; 
             }
@@ -1432,7 +1659,6 @@
         }
 
         // Initialize
-        console.log("🚀 Starting boot sequence...");
         boot();
     </script>
 </body>
