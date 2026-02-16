@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FutureU CRM - Multi-User Telecalling</title>
+    <title>Lumina CRM - Multi-User Telecalling</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -51,7 +51,7 @@
             padding: 1rem;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-center;
             gap: 0.5rem;
             border-radius: 1rem;
             font-weight: 700;
@@ -113,6 +113,33 @@
             background-size: 1.25rem;
             padding-right: 2.5rem;
         }
+
+        /* Preview table styles */
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        
+        .preview-table th {
+            background: #f1f5f9;
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 700;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .preview-table td {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .field-mapper {
+            background: #fefce8;
+            border: 2px solid #fbbf24;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-24 md:pb-12">
@@ -151,7 +178,7 @@
             <div class="flex items-center space-x-3 w-full md:w-auto">
                 <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center"><i class="fas fa-university"></i></div>
                 <div>
-                    <span class="text-lg font-black block leading-none tracking-tight text-white">FutureU CRM</span>
+                    <span class="text-lg font-black block leading-none tracking-tight text-white">Lumina CRM</span>
                     <span id="currentUserLabel" class="text-[10px] uppercase font-bold text-indigo-300 tracking-widest">Identifying...</span>
                 </div>
             </div>
@@ -319,23 +346,75 @@
         </div>
     </div>
 
-    <div id="importModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 max-w-md w-full animate-slide">
+    <!-- IMPROVED IMPORT MODAL WITH FIELD MAPPING -->
+    <div id="importModal" class="fixed inset-0 bg-slate-900/70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 max-w-3xl w-full animate-slide my-8">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
                 <h3 class="text-xl font-black text-slate-800">Batch Upload</h3>
                 <button onclick="window.closeImportModal()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times"></i></button>
             </div>
-            <div class="space-y-4">
-                <div class="p-6 border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50 flex flex-col items-center">
-                    <input type="file" id="csvFileInput" accept=".csv" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-600 file:text-white transition-all">
+            
+            <!-- Step 1: File Upload -->
+            <div id="importStep1" class="space-y-4">
+                <div class="p-6 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 flex flex-col items-center">
+                    <i class="fas fa-file-excel text-4xl text-emerald-500 mb-3"></i>
+                    <p class="text-sm font-bold text-slate-700 mb-2">Upload CSV or Excel File</p>
+                    <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-600 file:text-white transition-all file:cursor-pointer">
                 </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1 tracking-wider">List Name (e.g. FB Leads)</label>
-                    <input type="text" id="importBatch" placeholder="Enter batch name..." class="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none text-sm font-bold shadow-sm mb-4">
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1 text-indigo-600 tracking-wider">Assign To:</label>
-                    <select id="importAssignee" class="w-full px-4 py-4 rounded-2xl border border-slate-200 outline-none bg-white text-sm font-bold shadow-sm"></select>
+                <button onclick="window.parseImportFile()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition">
+                    <i class="fas fa-arrow-right mr-2"></i> Preview & Map Fields
+                </button>
+            </div>
+
+            <!-- Step 2: Field Mapping & Preview -->
+            <div id="importStep2" class="hidden space-y-4">
+                <div class="field-mapper mb-4">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-map-pin text-amber-600 mr-2"></i>
+                        <h4 class="font-black text-sm text-slate-800">Map Your Columns</h4>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">Tell us which columns contain the Name and Phone Number</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-600 uppercase mb-2 ml-1">Name Column</label>
+                            <select id="nameColumnSelect" class="w-full px-4 py-3 rounded-xl border-2 border-amber-300 bg-white text-sm font-bold outline-none shadow-sm">
+                                <option value="">-- Select Column --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-600 uppercase mb-2 ml-1">Phone Column</label>
+                            <select id="phoneColumnSelect" class="w-full px-4 py-3 rounded-xl border-2 border-amber-300 bg-white text-sm font-bold outline-none shadow-sm">
+                                <option value="">-- Select Column --</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="window.handleImportSubmit()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition mt-2">Sync List</button>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 max-h-64 overflow-auto">
+                    <p class="text-xs font-black text-slate-600 uppercase mb-3">Preview (First 5 Rows)</p>
+                    <div id="importPreview"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1 tracking-wider">List Name</label>
+                        <input type="text" id="importBatch" placeholder="e.g. Facebook Leads Jan 2025" class="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none text-sm font-bold shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1 text-indigo-600 tracking-wider">Assign To</label>
+                        <select id="importAssignee" class="w-full px-4 py-4 rounded-2xl border border-slate-200 outline-none bg-white text-sm font-bold shadow-sm"></select>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="window.backToImportStep1()" class="flex-1 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold active:scale-95 transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <button onclick="window.handleImportSubmit()" class="flex-2 py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition">
+                        <i class="fas fa-upload mr-2"></i> Import <span id="importCount">0</span> Leads
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -390,6 +469,7 @@
         <span id="toastMsg" class="text-xs font-bold uppercase tracking-widest text-center">Success</span>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script type="module">
         console.log("🚀 Script starting...");
         
@@ -423,6 +503,7 @@
         let isAuthReady = false;
         let chartInstance = null;
         let activeWaPhone = "";
+        let parsedFileData = null; // Store parsed CSV/Excel data
         
         // STATUS CONFIGURATION
         const STATUS_LIST = [
@@ -1020,44 +1101,190 @@
             f.value = cur || "all";
         };
 
-        window.handleImportSubmit = async () => {
-            const f = document.getElementById('csvFileInput').files[0];
-            const a = document.getElementById('importAssignee').value;
-            const b = document.getElementById('importBatch').value || "Manual Import";
+        // IMPORT FUNCTIONS WITH FIELD MAPPING
+        window.parseImportFile = () => {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
             
-            if (!f) {
-                showToast("Select File");
+            if (!file) {
+                showToast("Please select a file");
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const data = e.target.result;
+                
+                // Check file type and parse accordingly
+                if (file.name.endsWith('.csv')) {
+                    parseCSV(data);
+                } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                    parseExcel(data);
+                } else {
+                    showToast("Unsupported file format");
+                }
+            };
+            
+            if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+            } else {
+                reader.readAsBinaryString(file);
+            }
+        };
+
+        const parseCSV = (text) => {
+            const lines = text.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                showToast("File is empty or invalid");
                 return;
             }
             
-            const r = new FileReader();
-            r.onload = async (e) => {
-                const rows = e.target.result.split('\n').slice(1);
-                showToast("Syncing records...");
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const rows = lines.slice(1).map(line => {
+                return line.split(',').map(cell => cell.trim().replace(/^"|"$/g, ''));
+            });
+            
+            parsedFileData = { headers, rows };
+            showFieldMapping();
+        };
+
+        const parseExcel = (data) => {
+            try {
+                const workbook = XLSX.read(data, { type: 'binary' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
                 
-                for (const row of rows) {
-                    const c = row.split(',').map(cl => cl.trim().replace(/^"|"$/g, ''));
-                    if (c.length >= 2 && c[1]) {
-                        try {
-                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), { 
-                                name: c[0], 
-                                phone: c[1], 
-                                status: 'New Lead', 
-                                notes: c[3] || '', 
-                                assignedTo: a, 
-                                batchId: b, 
-                                createdAt: new Date().toISOString() 
-                            });
-                        } catch (e) {
-                            console.error("Import error:", e);
-                        }
-                    }
+                if (jsonData.length < 2) {
+                    showToast("File is empty or invalid");
+                    return;
                 }
                 
-                showToast("Batch Imported"); 
-                window.closeImportModal();
-            };
-            r.readAsText(f);
+                const headers = jsonData[0].map(h => String(h || '').trim());
+                const rows = jsonData.slice(1).filter(row => row.some(cell => cell));
+                
+                parsedFileData = { headers, rows };
+                showFieldMapping();
+            } catch (e) {
+                console.error("Excel parse error:", e);
+                showToast("Failed to parse Excel file");
+            }
+        };
+
+        const showFieldMapping = () => {
+            if (!parsedFileData) return;
+            
+            const { headers, rows } = parsedFileData;
+            
+            // Populate column selectors
+            const nameSelect = document.getElementById('nameColumnSelect');
+            const phoneSelect = document.getElementById('phoneColumnSelect');
+            
+            const columnOptions = headers.map((h, i) => 
+                `<option value="${i}">${h || `Column ${i + 1}`}</option>`
+            ).join('');
+            
+            nameSelect.innerHTML = '<option value="">-- Select Column --</option>' + columnOptions;
+            phoneSelect.innerHTML = '<option value="">-- Select Column --</option>' + columnOptions;
+            
+            // Try to auto-detect name and phone columns
+            headers.forEach((header, index) => {
+                const lowerHeader = header.toLowerCase();
+                if (lowerHeader.includes('name') || lowerHeader.includes('student')) {
+                    nameSelect.value = index;
+                }
+                if (lowerHeader.includes('phone') || lowerHeader.includes('mobile') || lowerHeader.includes('number')) {
+                    phoneSelect.value = index;
+                }
+            });
+            
+            // Show preview
+            renderPreviewTable();
+            
+            // Update count
+            document.getElementById('importCount').innerText = rows.length;
+            
+            // Switch to step 2
+            document.getElementById('importStep1').classList.add('hidden');
+            document.getElementById('importStep2').classList.remove('hidden');
+        };
+
+        const renderPreviewTable = () => {
+            if (!parsedFileData) return;
+            
+            const { headers, rows } = parsedFileData;
+            const preview = rows.slice(0, 5); // Show first 5 rows
+            
+            let html = '<table class="preview-table"><thead><tr>';
+            headers.forEach(h => {
+                html += `<th>${h || 'Column'}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            preview.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += `<td>${cell || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('importPreview').innerHTML = html;
+        };
+
+        window.backToImportStep1 = () => {
+            document.getElementById('importStep2').classList.add('hidden');
+            document.getElementById('importStep1').classList.remove('hidden');
+            parsedFileData = null;
+        };
+
+        window.handleImportSubmit = async () => {
+            const nameColIndex = parseInt(document.getElementById('nameColumnSelect').value);
+            const phoneColIndex = parseInt(document.getElementById('phoneColumnSelect').value);
+            const assignee = document.getElementById('importAssignee').value;
+            const batchName = document.getElementById('importBatch').value || "Manual Import";
+            
+            if (isNaN(nameColIndex) || isNaN(phoneColIndex)) {
+                showToast("Please select Name and Phone columns");
+                return;
+            }
+            
+            if (!parsedFileData) {
+                showToast("No data to import");
+                return;
+            }
+            
+            const { rows } = parsedFileData;
+            let importedCount = 0;
+            
+            showToast("Importing leads...");
+            
+            for (const row of rows) {
+                const name = row[nameColIndex];
+                const phone = row[phoneColIndex];
+                
+                // Skip rows without name or phone
+                if (!name || !phone) continue;
+                
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), { 
+                        name: String(name).trim(), 
+                        phone: String(phone).trim(), 
+                        status: 'New Lead', 
+                        notes: '', 
+                        assignedTo: assignee, 
+                        batchId: batchName, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    importedCount++;
+                } catch (e) {
+                    console.error("Import error:", e);
+                }
+            }
+            
+            showToast(`${importedCount} leads imported successfully`);
+            window.closeImportModal();
         };
 
         window.editLead = (id) => {
@@ -1085,11 +1312,18 @@
         };
         
         window.openImportModal = () => { 
-            document.getElementById('importModal').style.display = 'flex'; 
+            document.getElementById('importModal').style.display = 'flex';
+            document.getElementById('importStep1').classList.remove('hidden');
+            document.getElementById('importStep2').classList.add('hidden');
+            document.getElementById('csvFileInput').value = '';
+            parsedFileData = null;
             setupSelectLists(); 
         };
         
-        window.closeImportModal = () => document.getElementById('importModal').style.display = 'none';
+        window.closeImportModal = () => {
+            document.getElementById('importModal').style.display = 'none';
+            parsedFileData = null;
+        };
 
         document.getElementById('leadForm').onsubmit = async (e) => {
             e.preventDefault();
@@ -1123,39 +1357,7 @@
         window.openWaModal = (n, p) => { 
             activeWaPhone = p; 
             document.getElementById('waTargetInfo').innerText = `${n} | ${p}`; 
-            document.getElementById('waMessage').value = `Hello ${n}, Hi, This is from FutureU Institute...🚀 FutureU-വിലൂടെ ഒരു മികച്ച കരിയർ സ്വന്തമാക്കൂ! 🎓
-നിങ്ങളുടെ തൊഴിൽ സ്വപ്നങ്ങൾ യാഥാർത്ഥ്യമാക്കാൻ ഏറ്റവും മികച്ച കോഴ്സുകൾ ഇപ്പോൾ FutureU Karuvarakundu-ൽ!
-
-🏛️ സർക്കാർ ജോലി നേടാം (Competitive Exams)
-PSC Regular Batch (Mon – Fri): 3 ദിവസം തിയറി, 1 ദിവസം CA ക്ലാസ്സുകൾ. ആഴ്ചയിൽ 4 റെഗുലർ ടെസ്റ്റുകളും മോക്ക് ടെസ്റ്റും.
-
-PSC, SSC & RRB Holiday Batch (Sat & Sun): ജോലി ചെയ്യുന്നവർക്കായി പ്രത്യേക ബാച്ച് (9 AM - 4 PM).
-
-SSC: CGL, CHSL, MTS & GD.
-
-RRB: Group D, NTPC & ALP.
-
-💼 പ്രൊഫഷണൽ കോഴ്സുകൾ (Professional Courses)
-Accounting & Finance: PDIFA, DFA, DIFA.
-
-(Tally Prime, GST, Zoho Books, QuickBooks & VAT).
-
-IT & Software Development: PGDCA, DCA.
-
-(Python, C++, PHP, Web Design, SQL & MS Office).
-
-Creative & Digital Media: Graphic Designing + Digital Marketing.
-
-Office Management: DOM (Diploma in Office Management).
-
-🎓 സ്കൂൾ പഠനം (NIOS Schooling)
-10th & +2: പഠനം മുടങ്ങിയവർക്ക് സുവർണ്ണാവസരം! (സർക്കാർ ജോലികൾക്കും ഉപരിപഠനത്തിനും അംഗീകൃതം).
-
-📍 സ്ഥലം: FutureU Institute, Vayalil Arcade, Karuvarakundu
-
-📞 അഡ്മിഷനായി വിളിക്കൂ: +91 6235147614, +91 6235147616
-
-FutureU — Building a better you! 🌟`; 
+            document.getElementById('waMessage').value = `Hello ${n}, Lumina Institute calling...`; 
             document.getElementById('waModal').style.display = 'flex'; 
         };
         
@@ -1235,7 +1437,3 @@ FutureU — Building a better you! 🌟`;
     </script>
 </body>
 </html>
-
-
-
-
